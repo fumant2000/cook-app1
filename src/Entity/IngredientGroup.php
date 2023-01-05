@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiResource;
 use App\Entity\Traits\HasIdTrait;
 use App\Entity\Traits\HasNameTrait;
 use App\Repository\IngredientGroupRepository;
@@ -9,16 +10,26 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\Delete;
+use ApiPlatform\Metadata\Patch;
 
 #[ORM\Entity(repositoryClass: IngredientGroupRepository::class)]
+#[ApiResource(operations: [
+    new Get(),
+    new Delete(),
+    new Patch(),
+    new Post(),
+    new GetCollection()
+])]
 class IngredientGroup
 {
 
     use HasIdTrait;
     use HasNameTrait;
 
-    #[ORM\Column(type: Types::SMALLINT)]
-    private ?int $priority = null;
 
     #[ORM\OneToMany(mappedBy: 'ingredientGroup', targetEntity: RecipeHasIngredient::class)]
     private Collection $recipeHasIngredients;
@@ -26,20 +37,6 @@ class IngredientGroup
     public function __construct()
     {
         $this->recipeHasIngredients = new ArrayCollection();
-    }
-
-  
-
-    public function getPriority(): ?int
-    {
-        return $this->priority;
-    }
-
-    public function setPriority(int $priority): self
-    {
-        $this->priority = $priority;
-
-        return $this;
     }
 
     /**

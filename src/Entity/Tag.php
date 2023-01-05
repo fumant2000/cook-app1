@@ -2,49 +2,60 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiResource;
 use App\Entity\Traits\HasDescriptionTrait;
 use App\Entity\Traits\HasIdTrait;
 use App\Entity\Traits\HasNameTrait;
 use App\Repository\TagRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\Delete;
+use ApiPlatform\Metadata\Patch;
+use App\Entity\Traits\HasPriorityTrait;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Post;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: TagRepository::class)]
+#[ApiResource(operations: [
+    new Get(),
+    new Delete(),
+    new Patch(),
+    new Post(),
+    new GetCollection()
+])]
 class Tag
 {
 
     use HasIdTrait;
     use HasNameTrait;
     use HasDescriptionTrait;
-
-    #[ORM\Column(type: Types::SMALLINT)]
-    private ?int $priority = null;
+    use HasPriorityTrait;
 
     #[ORM\Column]
+    #[Groups(['get'])]
     private ?bool $menu = null;
 
     #[ORM\ManyToMany(targetEntity: Recipe::class, inversedBy: 'tags')]
     private Collection $recipe;
 
+    #[ORM\ManyToOne(targetEntity: self::class, inversedBy: 'parent')]
+    #[ORM\JoinColumn(onDelete: 'SET NULL')]
+    #[Groups(['get'])]
+    private ?self $children = null;
+
+    #[ORM\OneToMany(mappedBy: 'children', targetEntity: self::class)]
+    #[Groups(['get'])]
+    private Collection $parent;
+
     public function __construct()
     {
         $this->recipe = new ArrayCollection();
+        $this->parent = new ArrayCollection();
     }
 
-  
-    public function getPriority(): ?int
-    {
-        return $this->priority;
-    }
-
-    public function setPriority(int $priority): self
-    {
-        $this->priority = $priority;
-
-        return $this;
-    }
 
     public function isMenu(): ?bool
     {
@@ -78,6 +89,48 @@ class Tag
     public function removeRecipe(Recipe $recipe): self
     {
         $this->recipe->removeElement($recipe);
+
+        return $this;
+    }
+
+    public function getChildren(): ?self
+    {
+        return $this->children;
+    }
+
+    public function setChildren(?self $children): self
+    {
+        $this->children = $children;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, self>
+     */
+    public function getParent(): Collection
+    {
+        return $this->parent;
+    }
+
+    public function addParent(self $parent): self
+    {
+        if (!$this->parent->contains($parent)) {
+            $this->parent->add($parent);
+            $parent->setChildren($this);
+        }
+
+        return $this;
+    }
+
+    public function removeParent(self $parent): self
+    {
+        if ($this->parent->removeElement($parent)) {
+            // set the owning side to null (unless already changed)
+            if ($parent->getChildren() === $this) {
+                $parent->setChildren(null);
+            }
+        }
 
         return $this;
     }

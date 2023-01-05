@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiResource;
 use App\Entity\Traits\HasIdTrait;
 use App\Repository\StepRepository;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -9,24 +10,39 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\Delete;
+use ApiPlatform\Metadata\Patch;
+use App\Entity\Traits\HasTimestampTrait;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Post;
+use Symfony\Component\Serializer\Annotation\Groups;
+
 
 #[ORM\Entity(repositoryClass: StepRepository::class)]
+#[ApiResource(operations: [
+    new Get(),
+    new Delete(),
+    new Patch(),
+    new Post(),
+    new GetCollection()
+])]
 class Step
 {
     use HasIdTrait;
-    use TimestampableEntity;
+    use HasTimestampTrait;
 
     #[ORM\Column(type: Types::TEXT)]
+    #[Groups(['get'])]
     private ?string $content = null;
 
-    #[ORM\Column(type: Types::SMALLINT)]
-    private ?int $priority = null;
 
     #[ORM\ManyToOne(inversedBy: 'steps')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Recipe $recipe = null;
 
     #[ORM\OneToMany(mappedBy: 'step', targetEntity: Image::class)]
+    #[Groups(['get'])]
     private Collection $images;
 
     public function __construct()
@@ -42,18 +58,6 @@ class Step
     public function setContent(string $content): self
     {
         $this->content = $content;
-
-        return $this;
-    }
-
-    public function getPriority(): ?int
-    {
-        return $this->priority;
-    }
-
-    public function setPriority(int $priority): self
-    {
-        $this->priority = $priority;
 
         return $this;
     }

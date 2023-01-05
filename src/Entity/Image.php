@@ -2,29 +2,42 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Delete;
 use App\Entity\Traits\HasDescriptionTrait;
 use App\Entity\Traits\HasIdTrait;
 use App\Entity\Traits\HasNameTrait;
 use App\Repository\ImageRepository;
-use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-use Gedmo\Timestampable\Traits\TimestampableEntity;
+use ApiPlatform\Metadata\Get;
+use App\Entity\Traits\HasPriorityTrait;
+use App\Entity\Traits\HasTimestampTrait;
+use Symfony\Component\Serializer\Annotation\Groups;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Post;
 
 #[ORM\Entity(repositoryClass: ImageRepository::class)]
+#[ApiResource(operations: [
+    new Get(),
+    new Delete(),
+    new Post(),
+    new GetCollection()
+])]
+
 class Image
 {
     use HasIdTrait;
     use HasNameTrait;
     use HasDescriptionTrait;
-    use TimestampableEntity;
-
-    #[ORM\Column(type: Types::SMALLINT)]
-    private ?int $priority = null;
+    use HasTimestampTrait;
+    use HasPriorityTrait;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['get'])]
     private ?string $path = null;
 
     #[ORM\Column]
+    #[Groups(['get'])]
     private ?float $size = null;
 
     #[ORM\ManyToOne(inversedBy: 'images')]
@@ -32,20 +45,6 @@ class Image
 
     #[ORM\ManyToOne(inversedBy: 'images')]
     private ?Step $step = null;
-
-   
-
-    public function getPriority(): ?int
-    {
-        return $this->priority;
-    }
-
-    public function setPriority(int $priority): self
-    {
-        $this->priority = $priority;
-
-        return $this;
-    }
 
     public function getPath(): ?string
     {
