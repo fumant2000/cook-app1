@@ -3,21 +3,19 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Delete;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Patch;
+use ApiPlatform\Metadata\Post;
 use App\Entity\Traits\HasIdTrait;
+use App\Entity\Traits\HasTimestampTrait;
 use App\Repository\StepRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-use Gedmo\Timestampable\Traits\TimestampableEntity;
-use ApiPlatform\Metadata\Get;
-use ApiPlatform\Metadata\Delete;
-use ApiPlatform\Metadata\Patch;
-use App\Entity\Traits\HasTimestampTrait;
-use ApiPlatform\Metadata\GetCollection;
-use ApiPlatform\Metadata\Post;
 use Symfony\Component\Serializer\Annotation\Groups;
-
 
 #[ORM\Entity(repositoryClass: StepRepository::class)]
 #[ApiResource(operations: [
@@ -25,7 +23,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
     new Delete(),
     new Patch(),
     new Post(),
-    new GetCollection()
+    new GetCollection(),
 ])]
 class Step
 {
@@ -36,11 +34,13 @@ class Step
     #[Groups(['get'])]
     private ?string $content = null;
 
-
     #[ORM\ManyToOne(inversedBy: 'steps')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Recipe $recipe = null;
 
+    /**
+     * @var Collection <int, Image>
+     */
     #[ORM\OneToMany(mappedBy: 'step', targetEntity: Image::class)]
     #[Groups(['get'])]
     private Collection $images;

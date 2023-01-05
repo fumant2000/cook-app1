@@ -3,19 +3,19 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Delete;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Patch;
+use ApiPlatform\Metadata\Post;
 use App\Entity\Traits\HasDescriptionTrait;
 use App\Entity\Traits\HasIdTrait;
 use App\Entity\Traits\HasNameTrait;
+use App\Entity\Traits\HasTimestampTrait;
 use App\Repository\SourceRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use ApiPlatform\Metadata\Get;
-use ApiPlatform\Metadata\Delete;
-use ApiPlatform\Metadata\Patch;
-use App\Entity\Traits\HasTimestampTrait;
-use ApiPlatform\Metadata\GetCollection;
-use ApiPlatform\Metadata\Post;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: SourceRepository::class)]
@@ -24,7 +24,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
     new Delete(),
     new Patch(),
     new Post(),
-    new GetCollection()
+    new GetCollection(),
 ])]
 class Source
 {
@@ -36,10 +36,15 @@ class Source
     #[ORM\Column(length: 255, nullable: true)]
     #[Groups(['get'])]
     private ?string $url = null;
-
+    /**
+     * @var Collection <int, Recipe>
+     */
     #[ORM\ManyToMany(targetEntity: Recipe::class, inversedBy: 'sources')]
     private Collection $recipe;
 
+    /**
+     * @var Collection <int, RecipeHasSource>
+     */
     #[ORM\OneToMany(mappedBy: 'source', targetEntity: RecipeHasSource::class, orphanRemoval: true)]
     private Collection $recipeHasSources;
 
@@ -48,8 +53,6 @@ class Source
         $this->recipe = new ArrayCollection();
         $this->recipeHasSources = new ArrayCollection();
     }
-
-   
 
     public function getUrl(): ?string
     {

@@ -3,19 +3,19 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Delete;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Patch;
+use ApiPlatform\Metadata\Post;
 use App\Entity\Traits\HasDescriptionTrait;
 use App\Entity\Traits\HasIdTrait;
 use App\Entity\Traits\HasNameTrait;
+use App\Entity\Traits\HasPriorityTrait;
 use App\Repository\TagRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use ApiPlatform\Metadata\Get;
-use ApiPlatform\Metadata\Delete;
-use ApiPlatform\Metadata\Patch;
-use App\Entity\Traits\HasPriorityTrait;
-use ApiPlatform\Metadata\GetCollection;
-use ApiPlatform\Metadata\Post;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: TagRepository::class)]
@@ -24,11 +24,10 @@ use Symfony\Component\Serializer\Annotation\Groups;
     new Delete(),
     new Patch(),
     new Post(),
-    new GetCollection()
+    new GetCollection(),
 ])]
 class Tag
 {
-
     use HasIdTrait;
     use HasNameTrait;
     use HasDescriptionTrait;
@@ -38,6 +37,9 @@ class Tag
     #[Groups(['get'])]
     private ?bool $menu = null;
 
+    /**
+     * @var Collection <int, Recipe>
+     */
     #[ORM\ManyToMany(targetEntity: Recipe::class, inversedBy: 'tags')]
     private Collection $recipe;
 
@@ -46,6 +48,9 @@ class Tag
     #[Groups(['get'])]
     private ?self $children = null;
 
+    /**
+     * @var Collection <int, Tag>
+     */
     #[ORM\OneToMany(mappedBy: 'children', targetEntity: self::class)]
     #[Groups(['get'])]
     private Collection $parent;
@@ -55,7 +60,6 @@ class Tag
         $this->recipe = new ArrayCollection();
         $this->parent = new ArrayCollection();
     }
-
 
     public function isMenu(): ?bool
     {

@@ -3,19 +3,19 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Delete;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Patch;
+use ApiPlatform\Metadata\Post;
 use App\Entity\Traits\HasDescriptionTrait;
 use App\Entity\Traits\HasIdTrait;
 use App\Entity\Traits\HasNameTrait;
+use App\Entity\Traits\HasTimestampTrait;
 use App\Repository\IngredientRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use ApiPlatform\Metadata\Get;
-use ApiPlatform\Metadata\GetCollection;
-use ApiPlatform\Metadata\Post;
-use ApiPlatform\Metadata\Delete;
-use ApiPlatform\Metadata\Patch;
-use App\Entity\Traits\HasTimestampTrait;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: IngredientRepository::class)]
@@ -24,14 +24,14 @@ use Symfony\Component\Serializer\Annotation\Groups;
     new GetCollection(),
     new Post(),
     new Delete(),
-    new Patch()
+    new Patch(),
 ])]
 class Ingredient
 {
-  use HasIdTrait;
-  use HasNameTrait;
-  use HasDescriptionTrait;
-  use HasTimestampTrait;
+    use HasIdTrait;
+    use HasNameTrait;
+    use HasDescriptionTrait;
+    use HasTimestampTrait;
     #[ORM\Column]
     #[Groups(['get'])]
     private ?bool $vegan = null;
@@ -47,7 +47,9 @@ class Ingredient
     #[ORM\Column]
     #[Groups(['get'])]
     private ?bool $glutenFree = null;
-
+    /**
+     * @var Collection <int, RecipeHasIngredient>
+     */
     #[ORM\OneToMany(mappedBy: 'ingredient', targetEntity: RecipeHasIngredient::class, orphanRemoval: true)]
     private Collection $recipeHasIngredients;
 

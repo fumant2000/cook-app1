@@ -3,22 +3,23 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
-use App\Repository\RecipeHasIngredientRepository;
-use Doctrine\ORM\Mapping as ORM;
-use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\Delete;
+use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
 use App\Entity\Traits\HasIdTrait;
+use App\Repository\RecipeHasIngredientRepository;
+use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
+
 #[ORM\Entity(repositoryClass: RecipeHasIngredientRepository::class)]
 #[ApiResource(operations: [
     new Get(),
     new Delete(),
     new Patch(),
     new Post(),
-    new GetCollection()
+    new GetCollection(),
 ])]
 class RecipeHasIngredient
 {

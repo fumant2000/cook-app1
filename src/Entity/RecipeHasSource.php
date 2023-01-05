@@ -3,15 +3,15 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
-use App\Entity\Traits\HasIdTrait;
-use App\Repository\RecipeHasSourceRepository;
-use Symfony\Component\Serializer\Annotation\Groups;
-use Doctrine\ORM\Mapping as ORM;
-use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\Delete;
+use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
+use App\Entity\Traits\HasIdTrait;
+use App\Repository\RecipeHasSourceRepository;
+use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: RecipeHasSourceRepository::class)]
 #[ApiResource(operations: [
@@ -19,7 +19,7 @@ use ApiPlatform\Metadata\Post;
     new Delete(),
     new Patch(),
     new Post(),
-    new GetCollection()
+    new GetCollection(),
 ]
 )]
 class RecipeHasSource
@@ -39,7 +39,6 @@ class RecipeHasSource
     #[Groups(['get'])]
     private ?Source $source = null;
 
-    
     public function getUrl(): ?string
     {
         return $this->url;

@@ -3,46 +3,41 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Delete;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Patch;
+use ApiPlatform\Metadata\Post;
 use App\Entity\Traits\HasDescriptionTrait;
 use App\Entity\Traits\HasIdTrait;
 use App\Entity\Traits\HasNameTrait;
+use App\Entity\Traits\HasTimestampTrait;
 use App\Repository\RecipeRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-use ApiPlatform\Metadata\Get;
-use ApiPlatform\Metadata\Delete;
-use ApiPlatform\Metadata\Patch;
-use App\Entity\Traits\HasTimestampTrait;
-use ApiPlatform\Metadata\GetCollection;
-use ApiPlatform\Metadata\Post;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: RecipeRepository::class)]
 #[ApiResource(operations: [
     new Delete(),
-    new Get(normalizationContext:['groups'=>['get','Recipe:collection:get']]),
+    new Get(normalizationContext: ['groups' => ['get', 'Recipe:collection:get']]),
     new Patch(),
     new Post(),
-    new GetCollection()
-    
+    new GetCollection(),
 ],
-
 )]
 class Recipe
 {
-   
-     use HasIdTrait;
-     use HasNameTrait;
-     use HasDescriptionTrait;
-     use HasTimestampTrait;
-   
+    use HasIdTrait;
+    use HasNameTrait;
+    use HasDescriptionTrait;
+    use HasTimestampTrait;
+
     #[ORM\Column]
     #[Groups(['get'])]
     private ?bool $draft = null;
-
-   
 
     #[ORM\Column(type: Types::SMALLINT, nullable: true)]
     #[Groups(['get'])]
@@ -56,25 +51,40 @@ class Recipe
     #[Groups(['get'])]
     private ?int $preparation = null;
 
+    /**
+     * @var Collection <int, Step>
+     */
     #[ORM\OneToMany(mappedBy: 'recipe', targetEntity: Step::class, orphanRemoval: true)]
     #[Groups(['get'])]
     private Collection $steps;
 
+    /**
+     * @var Collection <int, RecipeHasIngredient>
+     */
     #[ORM\OneToMany(mappedBy: 'recipe', targetEntity: RecipeHasIngredient::class, orphanRemoval: true)]
     #[Groups(['get'])]
     private Collection $recipeHasIngredients;
 
+    /**
+     * @var Collection <int, Tag>
+     */
     #[ORM\ManyToMany(targetEntity: Tag::class, mappedBy: 'recipe')]
     #[Groups(['get'])]
     private Collection $tags;
-
+    /**
+     * @var Collection <int, Source>
+     */
     #[ORM\ManyToMany(targetEntity: Source::class, mappedBy: 'recipe')]
     private Collection $sources;
-
+    /**
+     * @var Collection <int, Image>
+     */
     #[ORM\OneToMany(mappedBy: 'recipe', targetEntity: Image::class)]
     #[Groups(['get'])]
     private Collection $images;
-
+    /**
+     * @var Collection <int, RecipeHasSource>
+     */
     #[ORM\OneToMany(mappedBy: 'recipe', targetEntity: RecipeHasSource::class, orphanRemoval: true)]
     #[Groups(['get'])]
     private Collection $recipeHasSources;
@@ -100,8 +110,6 @@ class Recipe
 
         return $this;
     }
-
-  
 
     public function getCooking(): ?int
     {
@@ -312,5 +320,4 @@ class Recipe
 
         return $this;
     }
-
 }

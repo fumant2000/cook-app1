@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Entity\Traits;
 
 use Doctrine\ORM\Mapping as ORM;
@@ -9,13 +10,11 @@ trait HasIdTrait
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['get','Recipe:item:get'])]
+    #[Groups(['get', 'Recipe:item:get'])]
     private ?int $id = null;
-
 
     public function getId(): ?int
     {
         return $this->id;
     }
-
 }

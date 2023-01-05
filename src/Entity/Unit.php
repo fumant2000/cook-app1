@@ -3,16 +3,16 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Delete;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Patch;
+use ApiPlatform\Metadata\Post;
+use App\Entity\Traits\HasIdTrait;
 use App\Repository\UnitRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use ApiPlatform\Metadata\Get;
-use ApiPlatform\Metadata\Delete;
-use ApiPlatform\Metadata\Patch;
-use App\Entity\Traits\HasIdTrait;
-use ApiPlatform\Metadata\GetCollection;
-use ApiPlatform\Metadata\Post;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: UnitRepository::class)]
@@ -21,11 +21,11 @@ use Symfony\Component\Serializer\Annotation\Groups;
     new Delete(),
     new Patch(),
     new Post(),
-    new GetCollection()
+    new GetCollection(),
 ])]
 class Unit
 {
-   use HasIdTrait;
+    use HasIdTrait;
 
     #[ORM\Column(length: 100)]
     #[Groups(['get'])]
@@ -35,6 +35,9 @@ class Unit
     #[Groups(['get'])]
     private ?string $plural = null;
 
+    /**
+     * @var Collection <int, RecipeHasIngredient>
+     */
     #[ORM\OneToMany(mappedBy: 'unit', targetEntity: RecipeHasIngredient::class)]
     private Collection $recipeHasIngredients;
 
@@ -42,7 +45,6 @@ class Unit
     {
         $this->recipeHasIngredients = new ArrayCollection();
     }
-
 
     public function getSingular(): ?string
     {

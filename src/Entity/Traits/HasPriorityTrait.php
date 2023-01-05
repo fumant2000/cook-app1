@@ -9,7 +9,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
 trait HasPriorityTrait
 {
     #[ORM\Column(type: Types::SMALLINT)]
-    #[Groups(['get','Recipe:item:get'])]
+    #[Groups(['get', 'Recipe:item:get'])]
     private ?int $priority = null;
 
     public function getPriority(): ?int
